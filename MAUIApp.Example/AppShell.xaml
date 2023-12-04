@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="MAUIApp.Example.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:MAUIApp.Example"
+    xmlns:common="clr-namespace:MAUIApp.Example.Views.CommonPage"
+    xmlns:login="clr-namespace:MAUIApp.Example.Views.LoginViews"
+    xmlns:home="clr-namespace:MAUIApp.Example.Views.HomeViews"
+    xmlns:loading="clr-namespace:MAUIApp.Example.Views.LoadingViews"
+    Shell.FlyoutBehavior="Disabled"
+    Title="MAUIApp.Example">
+
+    <!--Loading Page-->
+    <!--<ShellContent
+        Title="Home"
+        ContentTemplate="{DataTemplate loading:LoadingViewPage}"
+        Route="loading" />-->
+
+    <!--Login Page-->
+    <ShellContent 
+        Title="Login" 
+        ContentTemplate="{DataTemplate login:LoginViewPage}"
+        Route="login"/>
+    <!--Main Page-->
+    <TabBar>
+        <Tab Title="Home" Icon="house_door_fill.svg">
+            <ShellContent
+                Icon="house_door_fill.svg"
+        Title="Home"
+        ContentTemplate="{DataTemplate home:HomeViewPage}"
+        Route="home" />
+        </Tab>
+        
+        <Tab Title="Settings" Icon="gear_fill.svg">
+            <ShellContent
+                Icon="house_door_fill.svg"
+        Title="Settings"
+        ContentTemplate="{DataTemplate home:HomeViewPage}"
+        Route="settings" />
+        </Tab>
+    </TabBar>
+
+</Shell>
