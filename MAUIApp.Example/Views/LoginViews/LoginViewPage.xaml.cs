@@ -1,11 +1,17 @@
+using MAUIApp.Example.Services.LoginAppService;
+using MAUIApp.Example.ViewModels;
+
 namespace MAUIApp.Example.Views.LoginViews;
 
 public partial class LoginViewPage : ContentPage
 {
-	public LoginViewPage()
+    private readonly ILoginAppService _loginAppService;
+    private readonly string urlApi;
+    public LoginViewPage()
 	{
 		InitializeComponent();
-	}
+        BindingContext = new LoginViewModel(new LoginAppService(urlApi));
+    }
 
     protected override bool OnBackButtonPressed()
     {

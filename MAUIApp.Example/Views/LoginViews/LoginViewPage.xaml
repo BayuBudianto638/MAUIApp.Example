@@ -2,7 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUIApp.Example.Views.LoginViews.LoginViewPage"
+             xmlns:local="clr-namespace:MAUIApp.Example.ViewModels"
              Title="LoginViewPage">
+    
     <Grid RowDefinitions="2*,*" Margin="0,10,0,0">
         <VerticalStackLayout Padding="10" VerticalOptions="Center" HorizontalOptions="Center">
             <Frame BorderColor="Gray"
@@ -35,16 +37,12 @@
            FontSize="14" Padding="5"
            FontAttributes="Bold" />
                     </VerticalStackLayout>
-
-                    <!--<BoxView Color="Gray"
-             HeightRequest="2"
-             HorizontalOptions="Fill" />-->
                     <VerticalStackLayout Padding="10">
                         <Label FontFamily="Consolas" Text="Username"/>
                         <Frame CornerRadius="10" Padding="3" Margin="0,10,0,0">
                             <VerticalStackLayout>
 
-                                <Entry x:Name="Username" Text="{Binding Email,Mode=TwoWay}" Margin="5,0,0,0" Placeholder="Username" FontSize="18">
+                                <Entry x:Name="Username" Text="{Binding Username,Mode=TwoWay}" Margin="5,0,0,0" Placeholder="Username" FontSize="18">
                                 </Entry>
 
                             </VerticalStackLayout>
@@ -61,10 +59,9 @@
                             </Frame>
                         </VerticalStackLayout>
 
-
                         <Button Margin="0,20,0,0"
                                 x:Name="LoginButton"
-                                Clicked="LoginButton_Clicked"
+                                Command="{Binding LoginCommand}"
                                 Text="Login" VerticalOptions="CenterAndExpand" 
                                 HorizontalOptions="FillAndExpand"/>
 
