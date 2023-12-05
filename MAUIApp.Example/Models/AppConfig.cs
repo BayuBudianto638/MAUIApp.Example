@@ -9,6 +9,6 @@ namespace MAUIApp.Example.Models
 {
     public class AppConfig
     {
-        public string ApiUrl { get; set; }
+        public string RestApiUrl { get; set; }
     }
 }

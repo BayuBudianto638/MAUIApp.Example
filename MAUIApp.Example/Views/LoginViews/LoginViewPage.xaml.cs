@@ -10,7 +10,7 @@ public partial class LoginViewPage : ContentPage
     public LoginViewPage()
 	{
 		InitializeComponent();
-        BindingContext = new LoginViewModel(new LoginAppService(urlApi));
+        BindingContext = new LoginViewModel(new LoginAppService());
     }
 
     protected override bool OnBackButtonPressed()

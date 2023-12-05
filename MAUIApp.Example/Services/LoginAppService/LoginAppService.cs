@@ -8,9 +8,13 @@ namespace MAUIApp.Example.Services.LoginAppService
 {
     public class LoginAppService : ILoginAppService
     {
-        private readonly string _apiUrl; 
+        private string _apiUrl;
+        public LoginAppService()
+        {
 
-        public LoginAppService(string apiUrl)
+        }
+
+        public void SetApiUrl(string apiUrl)
         {
             _apiUrl = apiUrl;
         }

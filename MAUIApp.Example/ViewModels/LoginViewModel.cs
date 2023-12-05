@@ -1,9 +1,11 @@
-﻿using MAUIApp.Example.Services.LoginAppService;
+﻿using MAUIApp.Example.Models;
+using MAUIApp.Example.Services.LoginAppService;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
@@ -11,10 +13,10 @@ namespace MAUIApp.Example.ViewModels
 {
     public class LoginViewModel: INotifyPropertyChanged
     {
-        private readonly ILoginAppService _loginAppService;
+        private readonly LoginAppService _loginAppService;
         public ICommand LoginCommand { get; }
 
-        public LoginViewModel(ILoginAppService loginAppService)
+        public LoginViewModel(LoginAppService loginAppService)
         {
             _loginAppService = loginAppService;
 
@@ -49,6 +51,21 @@ namespace MAUIApp.Example.ViewModels
             }
         }
 
+        private string _apiUrl;
+
+        public string ApiUrl
+        {
+            get => _apiUrl;
+            set
+            {
+                if (_apiUrl != value)
+                {
+                    _apiUrl = value;
+                    OnPropertyChanged(nameof(ApiUrl));
+                }
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected virtual void OnPropertyChanged(string propertyName)
@@ -56,8 +73,40 @@ namespace MAUIApp.Example.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private string setApiUrl()
+        {
+            string jsonConfig = LoadJsonConfig("appconfig.json");
+
+            if (!string.IsNullOrEmpty(jsonConfig))
+            {
+                AppConfig appConfig = JsonSerializer.Deserialize<AppConfig>(jsonConfig);
+                ApiUrl = appConfig.RestApiUrl;
+            }
+
+            return ApiUrl;
+        }
+
+        private static string? LoadJsonConfig(string fileName)
+        {
+            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), fileName);
+
+            try
+            {
+                using (StreamReader reader = new StreamReader(filePath))
+                {
+                    return reader.ReadToEnd();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error reading JSON configuration: {ex.Message}");
+                return null;
+            }
+        }
+
         public async Task<bool> LoginAsync()
         {
+            _loginAppService.SetApiUrl(setApiUrl());
             return await _loginAppService.LoginAsync(Username, Password);
         }
 

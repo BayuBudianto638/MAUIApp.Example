@@ -21,6 +21,11 @@ namespace MAUIApp.Example.Services.HttpAppService
             return await _httpClient.PostAsync(url, stringContent);
         }
 
+        public async Task<HttpResponseMessage> GetAsync(string url)
+        {
+            return await _httpClient.GetAsync(url);
+        }
+
         public void Dispose()
         {
             _httpClient.Dispose();
