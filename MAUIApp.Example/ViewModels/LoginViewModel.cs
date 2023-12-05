@@ -1,4 +1,5 @@
-﻿using MAUIApp.Example.Models;
+﻿using MAUIApp.Example.Helpers;
+using MAUIApp.Example.Models;
 using MAUIApp.Example.Services.LoginAppService;
 using System;
 using System.Collections.Generic;
@@ -75,7 +76,7 @@ namespace MAUIApp.Example.ViewModels
 
         private string setApiUrl()
         {
-            string jsonConfig = LoadJsonConfig("appconfig.json");
+            var jsonConfig = Helper.LoadJsonConfig("appconfig.json");
 
             if (!string.IsNullOrEmpty(jsonConfig))
             {
@@ -85,25 +86,7 @@ namespace MAUIApp.Example.ViewModels
 
             return ApiUrl;
         }
-
-        private static string? LoadJsonConfig(string fileName)
-        {
-            string filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), fileName);
-
-            try
-            {
-                using (StreamReader reader = new StreamReader(filePath))
-                {
-                    return reader.ReadToEnd();
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error reading JSON configuration: {ex.Message}");
-                return null;
-            }
-        }
-
+               
         public async Task<bool> LoginAsync()
         {
             _loginAppService.SetApiUrl(setApiUrl());
