@@ -1,12 +1,11 @@
 using MAUIApp.Example.Services.LoginAppService;
 using MAUIApp.Example.ViewModels;
+using MAUIApp.Example.Views.RegisterViews;
 
 namespace MAUIApp.Example.Views.LoginViews;
 
 public partial class LoginViewPage : ContentPage
 {
-    private readonly ILoginAppService _loginAppService;
-    private readonly string urlApi;
     public LoginViewPage()
 	{
 		InitializeComponent();
@@ -19,21 +18,8 @@ public partial class LoginViewPage : ContentPage
         return true;
     }
 
-    private async void LoginButton_Clicked(object sender, EventArgs e)
+    async void SignedUpButton_Clicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
-        if (IsCredentialCorrect(Username.Text, Password.Text))
-        {
-            await SecureStorage.SetAsync("hasAuth", "true");
-            await Shell.Current.GoToAsync("///home");
-        }
-        else
-        {
-            await DisplayAlert("Login failed", "Uusername or password is invalid", "Try again");
-        }
-    }
-
-    bool IsCredentialCorrect(string username, string password)
-    {
-        return Username.Text == "admin" && Password.Text == "1234";
+        await Navigation.PushModalAsync(new RegisterViewPage());
     }
 }

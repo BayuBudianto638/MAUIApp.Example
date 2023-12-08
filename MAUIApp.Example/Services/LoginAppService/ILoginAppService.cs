@@ -8,6 +8,6 @@ namespace MAUIApp.Example.Services.LoginAppService
 {
     public interface ILoginAppService
     {
-        Task<bool> LoginAsync(string username, string password);
+        Task<(bool, string)> LoginAsync(string username, string password);
     }
 }

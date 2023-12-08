@@ -6,4 +6,9 @@ public partial class EmployeeViewPage : ContentPage
 	{
 		InitializeComponent();
 	}
+
+    private async void OnAddClick(object sender, EventArgs e)
+    {
+       // await Navigation.PushAsync(new CustomerPageAdd());
+    }
 }

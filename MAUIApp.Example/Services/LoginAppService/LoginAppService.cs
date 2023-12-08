@@ -1,4 +1,6 @@
-﻿using System;
+﻿using MAUIApp.Example.Models;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,34 +10,35 @@ namespace MAUIApp.Example.Services.LoginAppService
 {
     public class LoginAppService : ILoginAppService
     {
-        private string _apiUrl;
         public LoginAppService()
         {
 
         }
 
-        public void SetApiUrl(string apiUrl)
+        public async Task<(bool, string)> LoginAsync(string username, string password)
         {
-            _apiUrl = apiUrl;
-        }
-
-        public async Task<bool> LoginAsync(string username, string password)
-        {
+            string tokenValue = string.Empty;
             try
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    var content = new StringContent($"{{\"username\":\"{username}\",\"password\":\"{password}\"}}", Encoding.UTF8, "application/json");
+                    var content = new StringContent($"{{\"userName\":\"{username}\",\"password\":\"{password}\",\"email\":\"Shiawase@gmail.com\"}}", Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync(_apiUrl, content);
+                    HttpResponseMessage response = await client.PostAsync(AppSettings.ApiUrl, content);
 
-                    return response.IsSuccessStatusCode;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string jsonResponse = await response.Content.ReadAsStringAsync();
+                        var responseObject = JsonConvert.DeserializeObject<Tokens>(jsonResponse);
+                        tokenValue = responseObject.Token;
+                    }
+
+                    return (response.IsSuccessStatusCode, tokenValue);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error during login: {ex.Message}");
-                return false;
+                return (false, $"Error during login: {ex.Message}");
             }
         }
     }

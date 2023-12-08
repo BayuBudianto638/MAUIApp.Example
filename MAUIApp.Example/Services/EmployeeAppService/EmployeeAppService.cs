@@ -8,27 +8,26 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Newtonsoft.Json;
+using MAUIApp.Example.Services.Sessions;
 
 namespace MAUIApp.Example.Services.EmployeeAppService
 {
-    public class EmployeeAppService: IEmployeeAppService
+    public class EmployeeAppService : IEmployeeAppService
     {
         private readonly HttpClient _httpClient;
-        private string _apiUrl;
 
         public EmployeeAppService()
         {
             _httpClient = new HttpClient();
         }
 
-        public void SetApiUrl(string apiUrl)
-        {
-            _apiUrl = apiUrl;
-        }
-
         public async Task<IEnumerable<Employee>> GetEmployeesAsync()
         {
-            var response = await _httpClient.GetAsync(_apiUrl);
+            var pageInfo = new PageInfo();
+            string apiUrl = $"{AppSettings.ApiUrl}/api/Employee/GetAllEmployee?Page={pageInfo.Page}&PageSize={pageInfo.PageSize}&Skip={pageInfo.Size}";
+            string token = SessionAppService.GetToken();
+
+            var response = await _httpClient.GetAsync(apiUrl);
 
             if (response.IsSuccessStatusCode)
             {
@@ -41,7 +40,7 @@ namespace MAUIApp.Example.Services.EmployeeAppService
 
         public async Task<Employee> GetEmployeeByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"{_apiUrl}/{id}");
+            var response = await _httpClient.GetAsync($"{AppSettings.ApiUrl}/{id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -57,7 +56,7 @@ namespace MAUIApp.Example.Services.EmployeeAppService
             try
             {
                 var stringContent = new StringContent(JsonConvert.SerializeObject(employee), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(_apiUrl, stringContent);
+                var response = await _httpClient.PostAsync(AppSettings.ApiUrl, stringContent);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -76,10 +75,11 @@ namespace MAUIApp.Example.Services.EmployeeAppService
 
         public async Task<(bool, string)> UpdateEmployeeAsync(Employee updatedEmployee)
         {
+            string id = string.Empty;
             try
             {
                 var stringContent = new StringContent(JsonConvert.SerializeObject(updatedEmployee), Encoding.UTF8, "application/json");
-                var response = await _httpClient.PutAsync($"{_apiUrl}/{id}", stringContent);
+                var response = await _httpClient.PutAsync($"{AppSettings.ApiUrl}/{id}", stringContent);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -100,7 +100,7 @@ namespace MAUIApp.Example.Services.EmployeeAppService
         {
             try
             {
-                var response = await _httpClient.DeleteAsync($"{_apiUrl}/{id}");
+                var response = await _httpClient.DeleteAsync($"{AppSettings.ApiUrl}/{id}");
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -116,7 +116,6 @@ namespace MAUIApp.Example.Services.EmployeeAppService
                 return (false, $"Exception: {ex.Message}");
             }
         }
-
 
         public void Dispose()
         {

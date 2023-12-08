@@ -1,4 +1,6 @@
-﻿using MAUIApp.Example.Models;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using MAUIApp.Example.Models;
 using MAUIApp.Example.Services.EmployeeAppService;
 using System;
 using System.Collections.Generic;
@@ -11,12 +13,18 @@ using System.Windows.Input;
 
 namespace MAUIApp.Example.ViewModels
 {
-    public class EmployeeViewModel: INotifyPropertyChanged
+    public partial class EmployeeViewModel : ObservableObject
     {
         private readonly EmployeeAppService _employeeService;
         private ObservableCollection<Employee> _employees;
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        [ObservableProperty]
+        private bool _isBusy;
+
+        [ObservableProperty]
+        private string _busyText;
 
         public ObservableCollection<Employee> Employees
         {
@@ -41,7 +49,6 @@ namespace MAUIApp.Example.ViewModels
             _employeeService = new EmployeeAppService();
             Employees = new ObservableCollection<Employee>();
 
-            LoadEmployeesCommand = new Command(async () => await LoadEmployees());
             CreateEmployeeCommand = new Command<Employee>(async (employee) => await CreateEmployee(employee));
             UpdateEmployeeCommand = new Command<Employee>(async (employee) => await UpdateEmployee(employee));
             DeleteEmployeeCommand = new Command<int>(async (id) => await DeleteEmployee(id));
@@ -49,21 +56,21 @@ namespace MAUIApp.Example.ViewModels
             LoadEmployeesCommand.Execute(null);
         }
 
-        private async Task LoadEmployees()
+        public async Task LoadEmployees()
         {
-            var employees = await _employeeService.GetEmployeesAsync();
-            if (employees != null)
+            await ExecuteAsync(async () =>
             {
-                Employees.Clear();
-                foreach (var employee in employees)
+                var costumers = await _employeeService.GetEmployeesAsync();
+                if (costumers is not null && costumers.Any())
                 {
-                    Employees.Add(employee);
+                    Employees ??= new ObservableCollection<Employee>();
+
+                    foreach (var costumer in costumers)
+                    {
+                        Employees.Add(costumer);
+                    }
                 }
-            }
-            else
-            {
-                Console.WriteLine("Error loading employees.");
-            }
+            }, "Fetching costumers...");
         }
 
         private async Task CreateEmployee(Employee employee)
@@ -108,5 +115,23 @@ namespace MAUIApp.Example.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        private async Task ExecuteAsync(Func<Task> operation, string? busyText = null)
+        {
+            IsBusy = true;
+            BusyText = busyText ?? "Processing...";
+            try
+            {
+                await operation?.Invoke();
+            }
+            catch (Exception ex)
+            {
+
+            }
+            finally
+            {
+                IsBusy = false;
+                BusyText = "Processing...";
+            }
+        }
     }
 }
