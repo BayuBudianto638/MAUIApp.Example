@@ -2,7 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MAUIApp.Example.Views.EmployeeViews.EmployeeViewPage"
+             xmlns:vm="clr-namespace:MAUIApp.Example.ViewModels"
+             xmlns:models="clr-namespace:MAUIApp.Example.Models"
+             x:DataType="vm:EmployeeViewModel"    
              Title="EmployeeViewPage">
+    
     <Grid RowDefinitions="Auto, Auto, *">
         <!-- Add Button -->
         <Button x:Name="AddBtn"
@@ -11,7 +15,7 @@
             Clicked="OnAddClick"
             HorizontalOptions="Fill" />
 
-        <!-- Loading Indicator --><!--
+        <!-- Loading Indicator -->
         <VerticalStackLayout Grid.Row="1"
                          VerticalOptions="Center"
                          HorizontalOptions="Center"
@@ -24,11 +28,11 @@
                HorizontalOptions="Center"/>
         </VerticalStackLayout>
 
-        --><!-- CollectionView --><!--
+        <!-- CollectionView -->
         <CollectionView Grid.Row="2"
-                    ItemsSource="{Binding Customers}">
+                    ItemsSource="{Binding Employees}">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:CustomerModel">
+                <DataTemplate x:DataType="models:Employee">
                     <Grid RowDefinitions="Auto, Auto"
                       ColumnDefinitions="*, Auto"
                       RowSpacing="5"
@@ -48,9 +52,8 @@
                             HeightRequest="25"
                             FontSize="12"
                             CornerRadius="2"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CustomerViewModel}}, Path=SetOperatingCustomerCommand}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployeeViewModel}}, Path=SetOperatingCustomerCommand}"
                             CommandParameter="{Binding .}"/>
-                        --><!--Clicked="OnEditClicked" />--><!--
 
                         <Button Grid.Row="1"
                             Grid.Column="1"
@@ -59,12 +62,11 @@
                             HeightRequest="25"
                             FontSize="12"
                             CornerRadius="2"
-                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:CustomerViewModel}}, Path=DeleteCustomerCommand}"
+                            Command="{Binding Source={RelativeSource AncestorType={x:Type vm:EmployeeViewModel}}, Path=DeleteCustomerCommand}"
                             CommandParameter="{Binding Id}" />
-                        --><!--Clicked="OnDeleteClicked" />--><!--
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
-        </CollectionView>-->
+        </CollectionView>
     </Grid>
 </ContentPage>
