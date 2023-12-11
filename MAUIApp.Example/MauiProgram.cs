@@ -3,6 +3,7 @@ using MAUIApp.Example.Models;
 using MAUIApp.Example.Services.EmployeeAppService;
 using MAUIApp.Example.Services.HttpAppService;
 using MAUIApp.Example.Services.LoginAppService;
+using MAUIApp.Example.ViewModels;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
@@ -25,8 +26,9 @@ namespace MAUIApp.Example
             builder.Logging.AddDebug();
 #endif
 
+            builder.Services.AddSingleton<EmployeeViewModel>();
             builder.Services.AddSingleton<ILoginAppService>(new LoginAppService());
-            builder.Services.AddTransient<IEmployeeAppService, EmployeeAppService>();
+            builder.Services.AddSingleton<IEmployeeAppService, EmployeeAppService>();
             builder.Services.AddSingleton<IHttpAppService, HttpAppService>();
 
             return builder.Build();
