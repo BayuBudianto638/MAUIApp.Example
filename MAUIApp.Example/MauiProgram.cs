@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using MAUIApp.Example.Models;
+using MAUIApp.Example.Services.EmployeeAppService;
 using MAUIApp.Example.Services.HttpAppService;
 using MAUIApp.Example.Services.LoginAppService;
 using Microsoft.Extensions.Logging;
@@ -20,12 +21,13 @@ namespace MAUIApp.Example
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            builder.Services.AddSingleton<ILoginAppService>(new LoginAppService());
-            builder.Services.AddSingleton<IHttpAppService, HttpAppService>();
-
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+
+            builder.Services.AddSingleton<ILoginAppService>(new LoginAppService());
+            builder.Services.AddTransient<IEmployeeAppService, EmployeeAppService>();
+            builder.Services.AddSingleton<IHttpAppService, HttpAppService>();
 
             return builder.Build();
         }

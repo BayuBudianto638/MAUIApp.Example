@@ -9,10 +9,10 @@ namespace MAUIApp.Example.Services.EmployeeAppService
 {
     public interface IEmployeeAppService
     {
-        Task<IEnumerable<Employee>> GetEmployeesAsync();
-        Task<Employee> GetEmployeeByIdAsync(int id);
-        Task<(bool, string)> CreateEmployeeAsync(Employee employee);
-        Task<(bool, string)> UpdateEmployeeAsync(Employee updatedEmployee);
+        Task<ListEmployee> GetEmployeesAsync();
+        Task<EmployeeModel> GetEmployeeByIdAsync(int id);
+        Task<(bool, string)> CreateEmployeeAsync(EmployeeModel employee);
+        Task<(bool, string)> UpdateEmployeeAsync(EmployeeModel updatedEmployee);
         Task<(bool, string)> DeleteEmployeeAsync(int id);
     }
 }

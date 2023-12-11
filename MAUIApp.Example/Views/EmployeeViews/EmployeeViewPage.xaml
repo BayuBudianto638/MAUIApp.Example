@@ -32,7 +32,7 @@
         <CollectionView Grid.Row="2"
                     ItemsSource="{Binding Employees}">
             <CollectionView.ItemTemplate>
-                <DataTemplate x:DataType="models:Employee">
+                <DataTemplate x:DataType="models:EmployeeModel">
                     <Grid RowDefinitions="Auto, Auto"
                       ColumnDefinitions="*, Auto"
                       RowSpacing="5"

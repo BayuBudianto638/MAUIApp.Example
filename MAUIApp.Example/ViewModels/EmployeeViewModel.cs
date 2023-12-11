@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using MAUIApp.Example.Models;
 using MAUIApp.Example.Services.EmployeeAppService;
+using MAUIApp.Example.Views.EmployeeViews;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,10 +16,25 @@ namespace MAUIApp.Example.ViewModels
 {
     public partial class EmployeeViewModel : ObservableObject
     {
-        private readonly EmployeeAppService _employeeService;
-        private ObservableCollection<Employee> _employees;
+        private readonly EmployeeAppService _employeeAppService;
+        private readonly INavigation _navigation;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public EmployeeViewModel(EmployeeAppService employeeAppService, INavigation navigation)
+        {
+            _employeeAppService = employeeAppService;
+            _navigation = navigation;
+        }
+
+        //public ICommand SetOperatingEmployeeCommand => new Command<EmployeeModel>(async (employee) =>
+        //{
+        //    await _navigation.PushAsync(new EmployeeAddPage());
+        //});
+
+        [ObservableProperty]
+        private ObservableCollection<EmployeeModel> _employees = new();
+
+        [ObservableProperty]
+        private EmployeeModel _operatingEmployee = new();
 
         [ObservableProperty]
         private bool _isBusy;
@@ -26,93 +42,84 @@ namespace MAUIApp.Example.ViewModels
         [ObservableProperty]
         private string _busyText;
 
-        public ObservableCollection<Employee> Employees
+        //public EmployeeModel OperatingEmployee { get; private set; }
+
+        public async Task LoadEmployeesAsync()
         {
-            get => _employees;
-            set
+            var empAppService = new EmployeeAppService();
+
+            await ExecuteAsync(async () => 
             {
-                if (_employees != value)
+                var employees = await empAppService.GetEmployeesAsync();
+
+                if (employees is not null && (employees.data != null))
                 {
-                    _employees = value;
-                    OnPropertyChanged(nameof(Employees));
-                }
-            }
-        }
+                    Employees ??= new ObservableCollection<EmployeeModel>();
+                    Employees.Clear();
 
-        public ICommand LoadEmployeesCommand { get; }
-        public ICommand CreateEmployeeCommand { get; }
-        public ICommand UpdateEmployeeCommand { get; }
-        public ICommand DeleteEmployeeCommand { get; }
-
-        public EmployeeViewModel()
-        {
-            _employeeService = new EmployeeAppService();
-            Employees = new ObservableCollection<Employee>();
-
-            CreateEmployeeCommand = new Command<Employee>(async (employee) => await CreateEmployee(employee));
-            UpdateEmployeeCommand = new Command<Employee>(async (employee) => await UpdateEmployee(employee));
-            DeleteEmployeeCommand = new Command<int>(async (id) => await DeleteEmployee(id));
-
-            LoadEmployeesCommand.Execute(null);
-        }
-
-        public async Task LoadEmployees()
-        {
-            await ExecuteAsync(async () =>
-            {
-                var costumers = await _employeeService.GetEmployeesAsync();
-                if (costumers is not null && costumers.Any())
-                {
-                    Employees ??= new ObservableCollection<Employee>();
-
-                    foreach (var costumer in costumers)
+                    foreach (var employee in employees.data)
                     {
-                        Employees.Add(costumer);
+                        Employees.Add(employee);
                     }
                 }
-            }, "Fetching costumers...");
+            }, "Fetching employees...");
         }
 
-        private async Task CreateEmployee(Employee employee)
-        {
-            var (isCreated, isSuccess) = await _employeeService.CreateEmployeeAsync(employee);
-            if (isCreated)
-            {
-                Employees.Add(employee);
-            }
-        }
+        [RelayCommand]
+        private void SetOperatingEmployee(EmployeeModel? employee) => OperatingEmployee = employee ?? new();
 
-        private async Task UpdateEmployee(Employee updatedEmployee)
+        [RelayCommand]
+        private async Task SaveEmployeeAsync()
         {
-            var (isUpdated, isSuccess) = await _employeeService.UpdateEmployeeAsync(updatedEmployee);
-            if (isUpdated)
+            if (OperatingEmployee is null)
+                return;
+
+            var busyText = OperatingEmployee.Id == 0 ? "Creating Employee..." : "Updating Employee...";
+            await ExecuteAsync(async () =>
             {
-                var existingEmployee = Employees.FirstOrDefault(e => e.Id == updatedEmployee.Id);
-                if (existingEmployee != null)
+                if (OperatingEmployee.Id == 0)
                 {
-                    existingEmployee.Code = updatedEmployee.Code;
-                    existingEmployee.Name = updatedEmployee.Name;
-                    existingEmployee.Age = updatedEmployee.Age;
+                    var (isCreate, isMsg) = await _employeeAppService.CreateEmployeeAsync(OperatingEmployee);
                 }
-            }
-        }
-
-        private async Task DeleteEmployee(int id)
-        {
-            var (isDeleted, isSuccess) = await _employeeService.DeleteEmployeeAsync(id);
-            if (isDeleted)
-            {
-                var deletedEmployee = Employees.FirstOrDefault(e => e.Id == id);
-                if (deletedEmployee != null)
+                else
                 {
-                    Employees.Remove(deletedEmployee);
+                    var (isUpdate, Message) = await _employeeAppService.UpdateEmployeeAsync(OperatingEmployee);
+                    if (isUpdate)
+                    {
+                        await Shell.Current.DisplayAlert("Success", "Employee creation success", "Ok");
+                        return;
+                    }
+                    else
+                    {
+                        await Shell.Current.DisplayAlert("Error", "Employee updation error", "Ok");
+                        return;
+                    }
                 }
-            }
+                SetOperatingEmployeeCommand.Execute(new());
+            }, busyText);
         }
 
-        private void OnPropertyChanged(string propertyName)
+        [RelayCommand]
+        private async Task DeleteEmployeeAsync(int id)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            bool answer = await Shell.Current.DisplayAlert("Question?", "Do you want to delete this record?", "Yes", "No");
+
+            if (answer.Equals(true))
+            {
+                await ExecuteAsync(async () =>
+                {
+                    var (isDeleted, Message) = await _employeeAppService.DeleteEmployeeAsync(id);
+                    if (isDeleted)
+                    {
+                        await Shell.Current.DisplayAlert("Delete Success", "Employee was deleted", "Ok");
+                    }
+                    else
+                    {
+                        await Shell.Current.DisplayAlert("Delete Error", "Employee was not deleted", "Ok");
+                    }
+                }, "Deleting Employee...");
+            }
+
         }
 
         private async Task ExecuteAsync(Func<Task> operation, string? busyText = null)
@@ -133,5 +140,6 @@ namespace MAUIApp.Example.ViewModels
                 BusyText = "Processing...";
             }
         }
+
     }
 }

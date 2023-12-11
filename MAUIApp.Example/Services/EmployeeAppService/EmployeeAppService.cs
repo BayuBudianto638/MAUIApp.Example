@@ -21,37 +21,30 @@ namespace MAUIApp.Example.Services.EmployeeAppService
             _httpClient = new HttpClient();
         }
 
-        public async Task<IEnumerable<Employee>> GetEmployeesAsync()
+        public async Task<ListEmployee> GetEmployeesAsync()
         {
-            var pageInfo = new PageInfo();
-            string apiUrl = $"{AppSettings.ApiUrl}/api/Employee/GetAllEmployee?Page={pageInfo.Page}&PageSize={pageInfo.PageSize}&Skip={pageInfo.Size}";
+            string apiUrl = $"{AppSettings.ApiUrl}api/Employee/GetAllEmployee";
             string token = SessionAppService.GetToken();
 
-            var response = await _httpClient.GetAsync(apiUrl);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var employees = await response.Content.ReadFromJsonAsync<IEnumerable<Employee>>();
-                return employees;
-            }
-
-            return null;
+            var response = await _httpClient.GetStringAsync(apiUrl);
+            var employees = JsonConvert.DeserializeObject<ListEmployee>(response);
+            return employees;
         }
 
-        public async Task<Employee> GetEmployeeByIdAsync(int id)
+        public async Task<EmployeeModel> GetEmployeeByIdAsync(int id)
         {
             var response = await _httpClient.GetAsync($"{AppSettings.ApiUrl}/{id}");
 
             if (response.IsSuccessStatusCode)
             {
-                var employee = await response.Content.ReadFromJsonAsync<Employee>();
+                var employee = await response.Content.ReadFromJsonAsync<EmployeeModel>();
                 return employee;
             }
 
             return null;
         }
 
-        public async Task<(bool, string)> CreateEmployeeAsync(Employee employee)
+        public async Task<(bool, string)> CreateEmployeeAsync(EmployeeModel employee)
         {
             try
             {
@@ -73,7 +66,7 @@ namespace MAUIApp.Example.Services.EmployeeAppService
             }
         }
 
-        public async Task<(bool, string)> UpdateEmployeeAsync(Employee updatedEmployee)
+        public async Task<(bool, string)> UpdateEmployeeAsync(EmployeeModel updatedEmployee)
         {
             string id = string.Empty;
             try

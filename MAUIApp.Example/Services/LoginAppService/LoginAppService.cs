@@ -24,7 +24,8 @@ namespace MAUIApp.Example.Services.LoginAppService
                 {
                     var content = new StringContent($"{{\"userName\":\"{username}\",\"password\":\"{password}\",\"email\":\"Shiawase@gmail.com\"}}", Encoding.UTF8, "application/json");
 
-                    HttpResponseMessage response = await client.PostAsync(AppSettings.ApiUrl, content);
+                    var _apiUrl = $"{AppSettings.ApiUrl}api/Login";
+                    HttpResponseMessage response = await client.PostAsync(_apiUrl, content);
 
                     if (response.IsSuccessStatusCode)
                     {

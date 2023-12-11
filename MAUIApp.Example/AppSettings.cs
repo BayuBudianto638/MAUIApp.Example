@@ -8,6 +8,6 @@ namespace MAUIApp.Example
 {
     public static class AppSettings
     {
-        public static string ApiUrl = "http://localhost:5169/api/Login";
+        public static string ApiUrl = "http://localhost:5169/";
     }
 }

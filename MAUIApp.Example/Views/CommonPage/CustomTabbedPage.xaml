@@ -3,6 +3,7 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             x:Class="MAUIApp.Example.Views.CommonPage.CustomTabbedPage"
             xmlns:local="clr-namespace:MAUIApp.Example.Views.HomeViews"
+            xmlns:employee="clr-namespace:MAUIApp.Example.Views.EmployeeViews"
             xmlns:android="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.AndroidSpecific;assembly=Microsoft.Maui.Controls"
             android:TabbedPage.ToolbarPlacement="Bottom"
             SelectedTabColor="#1d94ab"
@@ -11,6 +12,11 @@
     <NavigationPage Title="Home" IconImageSource="home_icon" BarBackgroundColor="#1d94ab" BarTextColor="White">
         <x:Arguments>
             <local:HomeViewPage />
+        </x:Arguments>
+    </NavigationPage>
+    <NavigationPage Title="Employee" IconImageSource="employee_icon" BarBackgroundColor="#1d94ab" BarTextColor="White">
+        <x:Arguments>
+            <employee:EmployeeViewPage />
         </x:Arguments>
     </NavigationPage>
 </TabbedPage>
